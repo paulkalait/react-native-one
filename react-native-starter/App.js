@@ -5,7 +5,7 @@ import GoalItem from "./components/GoalItem";
 
 export default function App() {
   const [courseGoals, setCourseGoals] = useState([]);
-  
+
   const [modalIsVisable, setModalIsVisable] = useState(false)
   
   const startAddGoalHandler = () => {
@@ -37,8 +37,9 @@ export default function App() {
   return (
     //by default this is not scrollable
     <View style={styles.appContainer}>
-    <Button title="Add New Goal" color='black'  onPress={startAddGoalHandler}/>
-    
+    <View style={styles.buttonContainer}>
+    <Button title="Add a New Goal" color='black'  onPress={startAddGoalHandler}/>
+    </View>
      <GoalInput onAddGoal={addGoalHandler} visable={modalIsVisable} onCloseModal={endAddGoalHadler} />
       <View elevation={10} style={styles.goalsContainer}>
         <FlatList
@@ -63,6 +64,7 @@ export default function App() {
 const styles = StyleSheet.create({
   appContainer: {
     paddingTop: 50,
+    backgroundColor: '#cccccc',
     // take the entire height of the app
     flex: 1,
     paddingHorizontal: 16,
