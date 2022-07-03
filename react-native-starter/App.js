@@ -1,38 +1,59 @@
 import { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, View, FlatList, Button } from "react-native";
+import GoalInput from "./components/GoalInput";
+import GoalItem from "./components/GoalItem";
 
 export default function App() {
-  const [goalEnteredText, setEnteredGoalText] = useState("");
   const [courseGoals, setCourseGoals] = useState([]);
+  
+  const [modalIsVisable, setModalIsVisable] = useState(false)
+  
+  const startAddGoalHandler = () => {
+    setModalIsVisable(true)
+  }
 
-  const goalInputHandler = (event) => {
-    setEnteredGoalText(event);
-  };
-
-  //when buttpn is clicked
-  const addGoalHandler = () => {
+  const endAddGoalHadler = () => {
+    setModalIsVisable(false)
+  }
+  //when button is clicked
+  const addGoalHandler = (goalEnteredText) => {
     setCourseGoals((currentCourseGoals) => [
       ...currentCourseGoals,
-      goalEnteredText,
+      // flatlist will look for a key property that i set here. every object item hads a key property
+      { text: goalEnteredText, id: Math.random().toString() },
     ]);
-    console.log(courseGoals)
+    setModalIsVisable(false)
+    console.log(courseGoals);
   };
 
-  return (
-    <View style={styles.appContainer}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.TextInput}
-          placeholder="Your course goal"
-          onChangeText={goalInputHandler}
-        />
-        <Button title="Add a goal" onPress={addGoalHandler} />
-      </View>
+  const deleteGoalHandler = (id) => {
+    setCourseGoals(currentCourseGoals => {
+                                    //IF THERE IS A MATTCH THEN THE NEW ARRAY WILL FILTER OUT THAT MATCHED ID
+      return currentCourseGoals.filter((goal) => goal.id !== id )
+    })
+    console.log('DELETED')
+  }
 
-      <View style={styles.goalsContainer}>
-          {courseGoals.map((goal) => 
-            <Text style={styles.singleGoal} key={goal}>{goal}</Text>
-          )}
+  return (
+    //by default this is not scrollable
+    <View style={styles.appContainer}>
+    <Button title="Add New Goal" color='black'  onPress={startAddGoalHandler}/>
+    
+     <GoalInput onAddGoal={addGoalHandler} visable={modalIsVisable} onCloseModal={endAddGoalHadler} />
+      <View elevation={10} style={styles.goalsContainer}>
+        <FlatList
+          data={courseGoals}
+          alwaysBounceHorizontal={false}
+          renderItem={(itemData) => {
+            return <GoalItem item={itemData.item} text={itemData.item.text} onDeleteItem={deleteGoalHandler} id={itemData.item.id} />;
+          }}
+          keyExtractor={(item, index) => {
+            {
+              /* tells flatlist how to get to the unique key */
+            }
+            return item.id;
+          }}
+        />
       </View>
     </View>
   );
@@ -46,32 +67,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
   },
-  inputContainer: {
-    flexDirection: "row",
-    flex: 1,
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
-    paddingTop: 10,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#cccccc",
-  },
-  TextInput: {
-    width: "70%",
-    borderWidth: 1.5,
-    paddingHorizontal: 6,
-    paddingVertical: 6,
-    borderRadius: 15,
-    borderColor: "#cccccc",
-    marginRight: 3,
-  },
   goalsContainer: {
     // will take up 7/8ths of the screen because text input container is 1
+    flexDirection: "column",
     flex: 7,
   },
-  singleGoal:{
-    marginBottom: '5%'
-    
-  }
 });
